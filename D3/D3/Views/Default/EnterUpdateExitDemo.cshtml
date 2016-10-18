@@ -1,0 +1,88 @@
+﻿<script src="~/scripts/d3/d3.js"></script>
+
+@{
+    ViewBag.Title = "EnterUpdateExitDemo";
+}
+
+<style>
+    .h-bar {
+        color: white;
+        text-align: right;
+        margin: 5px;
+        padding-right: 5px;
+    }
+</style>
+
+<h2>EnterUpdateExitDemo</h2>
+
+<p id="chart"></p>
+
+<script>
+
+    var data = [
+        { width: 10, color: 23 },
+        { width: 15, color: 33 },
+        { width: 50, color: 60 },
+        { width: 80, color: 22 },
+        { width: 55, color: 5 },
+        { width: 30, color: 30 },
+        { width: 10, color: 90 }
+    ];
+
+    var colorScale =
+        d3.scaleLinear()
+        .domain([0, 100])
+        .range(["#add8e6", "blue"]);
+
+    function Render() {
+        d3.select("#chart")
+        .selectAll("div.h-bar")
+        .data(data)
+        .enter()
+        .append("div")
+        .attr("class", "h-bar")
+        .append("span");
+
+        d3.select("#chart")
+        .selectAll("div.h-bar")
+        .data(data)
+        .exit().remove();
+
+        d3.select("#chart")
+        .selectAll("div.h-bar")
+        .data(data)
+        .style("width", function (d) {
+            return (d.width * 3) + "px";
+        })
+            .style("background-color", function (d) {
+                return colorScale(d.color);
+            })
+        .select("span")
+        .text(function (d) {
+            return d.width;
+        });
+
+        var all =
+            d3.select("#chart").selectAll("div.h-bar");
+
+        d3.select("#chart")
+        .selectAll("div.h-bar")
+        .sort(function (a, b) {
+            // 值 隐藏在 html 元素的 _data_ 属性中
+            return a.width > b.width ? 1 : -1;
+        })
+    }
+
+    function randomValue() {
+        return Math.round(Math.random() * 100);
+    }
+
+    Render(data);
+
+    //setInterval(function () {
+    //    data.shift();
+    //    data.push({ width: randomValue(), color: randomValue() });
+    //    Render(data);
+    //}, 300);
+
+</script>

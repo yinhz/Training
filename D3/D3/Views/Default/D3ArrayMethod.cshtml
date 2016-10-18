@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewBag.Title = "D3ArrayMethod";
+}
+
+<script src="~/scripts/d3/d3.js"></script>
+<script>
+    var data = [3, 2, 11, 7, 6, 4, 10, 8, 15];
+
+    var rsl = d3.bisect(data.sort(d3.ascending), 9);
+    
+        d3.extent(data);
+        d3.median(data);
+        d3.quantile(data.sort(d3.ascending),0.25);
+        d3.extent(data);
+
+        var data1 = [
+            { name: 1, cls: "A" },
+            { name: 2, cls: "A" },
+            { name: 3, cls: "B" },
+        ];
+
+    var rsl1 =
+        d3.nest().key(function (d) { return d.cls; })
+    .entries(data1);
+
+    alert(rsl1);
+</script>

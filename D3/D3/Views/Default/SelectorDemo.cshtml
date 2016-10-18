@@ -1,0 +1,44 @@
+﻿
+@{
+    ViewBag.Title = "SelectorDemo";
+}
+
+
+<style>
+    .goo {
+        font-weight: bold;
+    }
+</style>
+
+<p id="target">p1</p> <!-- A -->
+<p id="target">p2</p>
+<p id="target">p3</p>
+
+<button onclick="btnc1();">Switch font weight</button>
+
+
+<script type="text/javascript">
+    d3.selectAll("p#target") // <-- B
+        .attr("attr1","yinhz")
+        .text("Hello world!"); // <-- C
+
+    d3.selectAll("p")
+    .style("font-size", "25px")
+    .classed("goo", true)
+    .classed("goo", function () { return false; });
+
+    d3.selectAll("p")
+    .each(function (d, i) {
+        var d3obj = d3.select(this); // this 代表 被选中的 html 元素
+        console.log("d:" + d + " i:" + i)
+    });
+
+    var b = true;
+
+    function btnc1() {
+        b = !b;
+        d3.selectAll("p")
+        .classed("goo", b);
+    }
+</script>
+
