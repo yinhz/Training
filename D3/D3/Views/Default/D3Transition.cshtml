@@ -1,0 +1,168 @@
+﻿
+<script src="~/scripts/d3/d3.js"></script>
+
+@{
+    ViewBag.Title = "D3Transition";
+}
+
+<style>
+    .fixed-cell {
+        position: relative;
+        width: 100px;
+    }
+
+    .box {
+        float: none;
+    }
+</style>
+
+<h2>D3Transition (一图胜千言，D3 动画)</h2>
+<div style="height:140px;width:100%;background-color:antiquewhite;padding:20px;" id="bt2"></div>
+<br />
+<div id="bt3" style="height:500px; background-color:antiquewhite;padding:20px;"></div>
+<br />
+<div id="bt1"></div>
+<br />
+
+
+<script>
+    function bt1() {
+
+        var trans = d3.select("#bt1");
+        trans.selectAll("div").remove();
+        var duration = 2000;
+
+        trans.append("div")
+        .classed("box", true)
+        .style("background-color", "#e9967a")
+        .style("margin-left", "0px")
+        .style("width", "300px")
+        .style("height", "300px")
+        .transition()
+        .duration(duration)
+            .delay(100)
+            .on("start", function () {
+                console.log(arguments);
+            })
+        .style("background-color", "#add8e6")
+        .style("margin-left", "600px")
+        .style("width", "100px")
+        .style("height", "100px");
+    }
+
+    setInterval(bt1, 2000);
+    bt1();
+
+    var data = [];
+    var id = 0;
+    var dur = 500;
+
+    function push(data) {
+        data.push({ id: ++id, value: Math.round(Math.random() * 100) });
+    }
+
+    function render(data) {
+        var selection = d3.select("#bt2")
+        .selectAll("div.v-bar")
+        .data(data, function (d) { return d.id; });
+
+        selection.exit().remove();
+
+        selection.enter().append("div")
+        .classed("v-bar", true)
+        .style("position", "relative")
+        .style("top", "100px")
+        .style("left", function (d, i) {
+            return (i + 1) * 30 + "px";
+        })
+        .style("height", "0px")
+        .append("span")
+        .text(function (d) { return d.value; });;
+
+        selection.transition().duration(dur)
+        .style("top", function (d) {
+            return (100 - d.value) + "px";
+        })
+        .style("left", function (d, i) {
+            return i * 30 + "px";
+        })
+        .style("height", function (d) {
+            return d.value + "px";
+        });
+    }
+
+    for (var i = 0; i < 10; i++) {
+        push(data);
+    }
+
+    setInterval(function () {
+        data.shift();
+        push(data);
+        render(data);
+    }, 2000);
+    render(data);
+    render(data);
+</script>
+
+<script>
+    function bt3() {
+        var data = [
+            "linear",
+            "cubic",
+            "cubic-in-out",
+            "sin",
+            "sin-out",
+            "exp",
+            "circle",
+            "back",
+            "bounce",
+            function (t) { return t * t; }
+        ];
+
+        var colors = d3.schemeCategory10;
+
+        // 第一次运行，单纯与数据进行绑定。集合没有内容
+        var sel = d3.select("#bt3").selectAll("div.fixed-cell")
+        .data(data);
+
+        // 集合没有内容，所以 enter 取得所有元素，往里面插入所有元素
+        sel.enter().append("div")
+        .classed("fixed-cell", true)
+        .style("top", function (d, i) { return i * 10 + "px"; })
+        .style("left", "500px")
+        .style("background-color", function (d, i) { return colors[i]; })
+        .text(function (d) { if (typeof d === "function") return "custom"; return d; });
+
+        sel.exit().remove();
+
+        d3.select("#bt3").selectAll("div.fixed-cell").data(data)
+        .style("top", function (d, i) { return i * 10 + "px"; })
+        .style("left", "500px")
+        .style("background-color", function (d, i) { return colors[i]; })
+        .text(function (d) { if (typeof d === "function") return "custom"; return d; });
+
+        // sel 只有在重新 选取。d3.select("#bt3").selectAll("div.fixed-cell").data(data); 后才能有真正绑定上的元素。
+        d3.select("#bt3").selectAll("div.fixed-cell").data(data).transition().duration(2000).style("left", "10px");
+
+        // D3 不支持这种写法 （ease）
+        //sel.transition().ease(function (d) { return d; }).duration(2000).style("left", "10px");
+
+        //sel.transition().ease(d3.easeCubic).duration(2000).style("left", "10px");
+
+        //d3.selectAll("#bt3 div").transition().duration(2000).style("left", "10px");
+
+        //d3.selectAll("#bt3 div").each(function (d) {
+        //    d3.select(this)
+        //    .transition()
+        //  //.transition()
+        //    .duration(2000)
+        //  //.duration(2000)
+        //    .style("left", "10px");
+        //  //.style("left", "10px;");
+        //});
+    }
+
+    setInterval(
+    bt3, 2000);
+    //bt3();
+</script>

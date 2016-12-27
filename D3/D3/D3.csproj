@@ -132,6 +132,7 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\d3DemoStyle.css" />
     <Content Include="Content\Site.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -139,6 +140,7 @@
     <Content Include="scripts\ai.0.22.19-build00125.min.js" />
     <Content Include="scripts\bootstrap.js" />
     <Content Include="scripts\bootstrap.min.js" />
+    <Content Include="scripts\d3-ext\d3_ext_line_chart.js" />
     <Content Include="scripts\d3\d3.js" />
     <Content Include="scripts\d3\d3.min.js" />
     <Content Include="scripts\d3\README.md" />
@@ -176,6 +178,13 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="scripts\jquery-1.10.2.min.map" />
+    <Content Include="Views\Default\D3Scale.cshtml" />
+    <Content Include="Views\Default\D3Axis.cshtml" />
+    <Content Include="Views\Default\D3Transition.cshtml" />
+    <Content Include="Views\Default\D3Shape.cshtml" />
+    <Content Include="Views\Default\D3ChartBeautify.cshtml" />
+    <Content Include="Views\Default\D3Layout.cshtml" />
+    <Content Include="Views\Default\D3Interaction.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

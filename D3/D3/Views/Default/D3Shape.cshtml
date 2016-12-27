@@ -1,0 +1,291 @@
+﻿<script src="~/scripts/d3/d3.js"></script>
+
+@{
+    ViewBag.Title = "D3Shape";
+}
+
+<h2>D3Shape</h2>
+
+<button id="t1" onclick="t1()">begin transform</button>
+<br />
+<svg id="svg2" height="500" width="500px" style="background-color:antiquewhite;" enable-background="true"></svg>
+<br />
+
+<button onclick="reLine('linear')">linear</button>
+<button onclick="reLine('linear-closed')">linear-closed</button>
+<button onclick="reLine('step-before')">step-before</button>
+<button onclick="reLine('step-after')">step-after</button>
+<button onclick="reLine('basis')">basis</button>
+<button onclick="reLine('basis-open')">basis-open</button>
+<button onclick="reLine('basis-closed')">basis-closed</button>
+<button onclick="reLine('bundle')">bundle</button>
+<button onclick="reLine('cardinal')">cardinal</button>
+<button onclick="reLine('cardinal-open')">cardinal-open</button>
+<button onclick="reLine('cardinal-closed')">cardinal-closed</button>
+<button onclick="reLine('monotoneX')">monotoneX</button>
+<button onclick="reLine('monotoneY')">monotoneY</button>
+
+<svg id="svg1" height="500" width="500px" style="background-color:antiquewhite;" enable-background="true"></svg>
+
+
+<script>
+
+    function renderAxis(svg, width, height, margin) {
+        // x axis
+
+        svg
+        .append("g")
+        .classed("xAxis", true)
+        .attr("transform", function (d) {
+            return "translate(" + margin + "," + (height - margin) + ")"; // 坐标轴 起点
+        })
+        .call(
+            // x 坐标轴
+            d3.axisBottom(
+                // 应用 线性 标尺
+                d3.scaleLinear()
+                .domain([0, 10])
+                .range([0, width - 2 * margin])
+            )
+        );
+
+        // y axis
+
+        svg
+        .append("g")
+        .classed("yAxis", true)
+        .attr("transform", function (d) {
+            return "translate(" + margin + "," + margin + ")"; // 坐标轴 起点
+        })
+        .call(
+            d3.axisLeft(
+                d3.scaleLinear()
+                .domain([10, 0])    // 因为 起点在上方。从上往下话。所以应该时 从 10 - 0
+                .range([margin, height - 2 * margin])   //          所以对应的像素 应该时 起点为 margin 重点为 高度 - 2 * margin
+            )
+        );
+    }
+
+    function reLine(type) {
+        // d3 内置的 线
+        var line = d3.line()
+        .x(function (d) { return x(d.x); })
+        .y(function (d) { return y(d.y); });
+
+        // 【设定2条线之间 如何进行连接】
+        switch (type) {
+            case "linear": line.curve(d3.curveLinear); break;
+            case "linear-closed": line.curve(d3.curveLinearClosed); break;
+            case "step-before": line.curve(d3.curveStepBefore); break;
+            case "step-after": line.curve(d3.curveStepAfter); break;
+            case "basis": line.curve(d3.curveBasis); break;
+            case "basis-open": line.curve(d3.curveBasisOpen); break;
+            case "basis-closed": line.curve(d3.curveBasisClosed); break;
+            case "bundle": line.curve(d3.curveBundle); break;
+            case "cardinal": line.curve(d3.curveCardinal); break;
+            case "cardinal-open": line.curve(d3.curveCardinalOpen); break;
+            case "cardinal-closed": line.curve(d3.curveCardinalClosed); break;
+            case "monotoneX": line.curve(d3.curveMonotoneX); break;
+            case "monotoneY": line.curve(d3.curveMonotoneY); break;
+        }
+
+        svg
+        .selectAll("path.line")
+        .data(data)
+        .transition()
+        // 在 svg 中 用 线 来画出 这个 path
+        .attr("d", function (d) { return line(d); });
+
+        var area = d3.area()
+        .x(function (d) { return x(d.x); })
+        .y0(y(0))
+        .y1(function (d) { return y(d.y); });
+
+        //var area = d3.area()
+        //.x(x)
+        //.y0(y(0))
+        //.y1(y);
+
+        // 【设定2条线之间 如何进行连接】
+        switch (type) {
+            case "linear": area.curve(d3.curveLinear); break;
+            case "linear-closed": area.curve(d3.curveLinearClosed); break;
+            case "step-before": area.curve(d3.curveStepBefore); break;
+            case "step-after": area.curve(d3.curveStepAfter); break;
+            case "basis": area.curve(d3.curveBasis); break;
+            case "basis-open": area.curve(d3.curveBasisOpen); break;
+            case "basis-closed": area.curve(d3.curveBasisClosed); break;
+            case "bundle": area.curve(d3.curveBundle); break;
+            case "cardinal": area.curve(d3.curveCardinal); break;
+            case "cardinal-open": area.curve(d3.curveCardinalOpen); break;
+            case "cardinal-closed": area.curve(d3.curveCardinalClosed); break;
+            case "monotoneX": area.curve(d3.curveMonotoneX); break;
+            case "monotoneY": area.curve(d3.curveMonotoneY); break;
+        }
+
+        svg.selectAll("path.area")
+        .data(data)
+        .transition()
+        .attr("d", area);
+    }
+
+    function renderLine(svg, x, y) {
+        // d3 内置的 线
+        var line = d3.line()
+        // 【设定2条线之间 如何进行连接】
+        //.curve(d3.curveStep)
+        .x(function (d) { return x(d.x); })
+        .y(function (d) { return y(d.y); });
+
+        svg
+        .selectAll("path.line")
+        .data(data)
+        .enter()
+        .append("path")
+        .classed("line", true)
+        // 在 svg 中 用 线 来画出 这个 path
+        .attr("d", line);
+        //.attr("d", function (d) { return line(d); });
+
+        var area = d3.area()
+        .x(function (d) { return x(d.x); })
+        .y0(y(0))
+        .y1(function (d) { return y(d.y); });
+
+        // 画 area
+        svg.selectAll("path.area")
+        .data(data)
+        .enter()
+        .append("path")
+        .classed("area", true)
+        .attr("d", area);
+
+        // data 是集合的集合。所以这里再次画圆的时候 需要遍历
+        // 因为对线 来说 就是 2个集合。但是在绘制圆的时候 需要的是 2个 集合里的 每个点
+        data.forEach(
+            function (v) {
+                //svg.append("circle")
+                //.data(v)
+                //.attr("class", "dot")
+                //.attr("cx", function (d) { return x(d.x); })    // left
+                //.attr("cy", function (d) { return y(d.x); })    // top
+                //.attr("r", 4.5);
+
+                //svg.append("circle")
+                //.attr("class", "dot")
+                //.attr("cx", x(v.x))    // left
+                //.attr("cy", y(v.y))    // top
+                //.attr("r", 4.5);
+
+                svg.append("g").selectAll("circle")
+                .data(v)
+                .enter()
+                .append("circle")
+                .attr("class", "dot")
+                .attr("cx", function (d) { return x(d.x); })    // left
+                .attr("cy", function (d) { return y(d.y); })    // top
+                .attr("r", 4.5);
+
+                //console.log(v);
+            }
+            );
+
+        //svg.selectAll("circle")
+        //.data(data)
+        //.enter()
+        //.append("circle")
+        //.attr("class", "dot")
+        //.attr("cx", function (d) { return x(d.x); })    // left
+        //.attr("cy", function (d) { return y(d.x); })    // top
+        //.attr("r", 4.5);
+    }
+
+    var width = 500,
+        height = 500,
+        margin = 20;
+
+    var x = d3.scaleLinear()
+    .domain([0, 10])
+    .range([margin, width - margin]);
+
+    var y = d3.scaleLinear()
+    .domain([0, 10])
+    .range([height - margin, margin]);
+
+    var data = [
+        d3.range(0, 10, 1).map(function (i) {
+            return { x: i, y: Math.sin(i) + 5 };
+        })
+    ];
+
+    var svg = d3.select("#svg1");
+
+    renderAxis(svg, width, height, margin);
+    renderLine(svg, x, y);
+
+</script>
+
+<!-- 圆+圆弧 -->
+<script>
+
+    function t1() {
+        d3.select("#t1").style("width", "200px").transition().duration(500).style("width", "100px");
+    }
+
+    fullAngle = 2 * Math.PI;
+
+    var colors = d3.schemeCategory20c;
+
+    var innerRadius = 100,
+        outerRadius = 100;
+
+    // para 1 内部半径 2 外部半径 3 全角度 = 2 * Math.PI
+    function renderArc(innerRadius, outerRadius, endAngle) {
+        var svg = d3.select("#svg2");
+
+        if (!endAngle) endAngle = fullAngle;
+
+        var data = [
+            { startAngle: 0 * endAngle, endAngle: 0.1 * endAngle },
+            { startAngle: 0.1 * endAngle, endAngle: 0.4 * endAngle },
+            { startAngle: 0.4 * endAngle, endAngle: 0.8 * endAngle },
+            { startAngle: 0.8 * endAngle, endAngle: 1 * endAngle }
+        ];
+
+        var arc = d3.arc()
+        .outerRadius(outerRadius)
+        .innerRadius(innerRadius);
+
+        svg.selectAll("g").remove();
+
+        svg.append("g")
+        .attr("transform", "translate(200,200)")
+        .selectAll("path.arc")
+        .data(data)
+        .enter()
+        .append("path")
+        .classed("arc", true)
+        .attr("fill", function (d, i) { return colors[i]; })
+        //.attr("d", function (d, i) {
+        //    return arc(d);
+        //    //return arc({
+        //    //    startAngle: d.startAngle,
+        //    //    endAngle: d.endAngle
+        //    //});
+        //})
+        .transition()
+        .duration(1000)
+        .attrTween("d", function (d) {
+            var start = { startAngle: 0, endAngle: 0 };
+            var interpolate = d3.interpolate(start, d);
+            return function (t) {
+                return arc(interpolate(t));
+            }
+        });
+    }
+
+    // 第三个参数 相当于 这个完整圆 画出来 百分之多少 1 = 100%
+    renderArc(50
+        , 100, 1 * fullAngle);
+
+</script>

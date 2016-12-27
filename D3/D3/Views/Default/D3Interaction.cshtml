@@ -1,0 +1,103 @@
+﻿<script src="~/scripts/d3/d3.js"></script>
+
+@{
+    ViewBag.Title = "D3Layout";
+}
+
+<h2>D3 Interaction</h2>
+
+<div style="display:inline-block">
+    <span>Position：</span><text id="position"></text>
+</div>
+
+<br />
+
+<svg id="svg1" width="500" height="500" style="background-color:cornsilk">
+    <g>
+        <circle r="50" transform="translate(100,100)" color="red" fill="red" fill-opacity="0.5" stroke="black"></circle>
+    </g>
+</svg>
+
+<script>
+
+    //d3.select("body")
+    //.on("touchstart", function () {
+    //    var positions = d3.touch(svg.node());
+    //});
+
+    d3.zoom()
+    .on("start", function () {
+        var xx = 11;
+    });
+
+    var svg = d3.select("#svg1");
+
+    var txtPosition = d3.select("#position");
+
+    svg.on("mousemove", function () {
+        var position = d3.mouse(svg.node());
+
+        txtPosition.text(position);
+
+        svg.append("circle")
+        .attr("cx", position[0])
+        .attr("cy", position[1])
+        .attr("r", 0)
+        .attr("fill", "red")
+        .transition()
+        .duration(1000)
+        .ease(d3.easeQuadIn)
+        .attr("r", 100)
+        .attr("fill", "yellow")
+        .on("end", function (d) {
+            d3.select(this).remove();
+        });
+    });
+
+    svg.on("click", function () {
+        var position = d3.mouse(svg.node());
+    });
+
+    var r = 50, width = 500, height = 500;
+    var data = [
+        [width / 2 - r, height / 2 - r],
+        [width / 2 - r, height / 2 + r],
+        [width / 2 + r, height / 2 - r],
+        [width / 2 + r, height / 2 + r]
+    ];
+
+    var drag = d3.drag().on("drag", onCircleDrag);
+
+    var g = svg.append("g");
+
+    g.call(d3.zoom().scaleExtent([1, 10]).on("zoom", zoom));
+
+    g.selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("r", r)
+    .attr("transform", function (d) {
+        return "translate(" + d + ")";
+    })
+    .call(drag);
+
+    function zoom() {
+        g.attr(
+            "transform", d3.event.transform
+            );
+    }
+
+    function onCircleDrag() {
+        var x = d3.event.x,
+            y = d3.event.y;
+
+        if (x >= (0 + r)
+            && x <= (width - r)
+            && y >= (0 + r)
+            && y <= (height - r)
+            ) {
+            d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
+        }
+    }
+</script>

@@ -1,0 +1,35 @@
+﻿<script src="~/scripts/d3-ext/d3_ext_line_chart.js"></script>
+
+@{
+    ViewBag.Title = "D3ChartBeautify";
+}
+
+<h2>D3ChartBeautify</h2>
+
+<svg id="svg1" width="500" height="500" style="background-color:cornsilk"></svg>
+
+<script>
+
+    var _data = [
+        d3.range(0, 11, 1).map(function (i) {
+            return { x: i, y: Math.abs(Math.cos(i) + 5) };
+        }),
+        d3.range(0, 11, 1).map(function (i) {
+            return { x: i, y: Math.abs(Math.sin(i) + 5) };
+        })
+    ];
+
+    var data = {
+        svg: document.getElementById("svg1"),
+        margin: 20,
+        data: _data,
+        showGridlines: true,
+        showArea: true
+    };
+
+    var lineChart = d3yhzChart.lineChart();
+    lineChart(data);
+
+    
+
+</script>

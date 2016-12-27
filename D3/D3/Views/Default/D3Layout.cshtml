@@ -1,0 +1,33 @@
+﻿<script src="~/scripts/d3/d3.js"></script>
+
+@{
+    ViewBag.Title = "D3Layout";
+}
+
+<h2>D3 Layout</h2>
+
+<svg id="svg1" width="500" height="500" style="background-color:cornsilk"></svg>
+
+<script>
+
+    var data = [3, 3, 4];
+    var pie = d3.pie();
+    var data1 = pie(data);
+
+
+    data = [
+        { x: 2.1, y: 3.5 },
+        { x: 4.4, y: 5.7 }
+    ];
+
+    var stack = d3.stack().keys(["x", "y"]).offset(d3.stackOffsetNone);
+
+    data = stack(data); //<-B
+
+
+    //data = [
+    //    [{ x: 0, y: 2.1 }, { x: 0, y: 4.4 }],
+    //    [{ x: 2.1, y: 5.6 }, { x: 4.4, y: 10.1 }] 
+    //];
+
+</script>

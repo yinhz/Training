@@ -79,10 +79,10 @@
 
     Render(data);
 
-    //setInterval(function () {
-    //    data.shift();
-    //    data.push({ width: randomValue(), color: randomValue() });
-    //    Render(data);
-    //}, 300);
+    setInterval(function () {
+        data.shift();
+        data.push({ width: randomValue(), color: randomValue() });
+        Render(data);
+    }, 300);
 
 </script>

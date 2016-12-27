@@ -1,0 +1,220 @@
+﻿<script src="~/scripts/d3/d3.js"></script>
+
+@{
+    ViewBag.Title = "D3Axis";
+}
+
+<h2>D3Axis</h2>
+
+<textarea style="height:200px;width:800px;max-width:800px;">
+    注意 line 的 Stroke 属性 。 否则看不到 svg 里的 line
+    stroke  定义一条线，文本或元素轮廓颜色
+    stroke-width 属性定义了一条线，文本或元素轮廓厚度
+    stroke-linecap 定义不同类型的开放路径的终结
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <g fill="none" stroke="black" stroke-width="6">
+            <path stroke-linecap="butt" d="M5 20 l215 0" />
+            <path stroke-linecap="round" d="M5 40 l215 0" />
+            <path stroke-linecap="square" d="M5 60 l215 0" />
+        </g>
+    </svg>
+    stroke-dasharray 用于创建虚线：
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <g fill="none" stroke="black" stroke-width="4">
+            <path stroke-dasharray="5,5" d="M5 20 l215 0" />
+            <path stroke-dasharray="10,10" d="M5 40 l215 0" />
+            <path stroke-dasharray="20,10,5,5,5,10" d="M5 60 l215 0" />
+        </g>
+    </svg>
+
+    .axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    }
+
+    .axis text {
+    font: 10px sans-serif;
+    }
+
+    .axis .grid-line{
+    stroke: black;
+    shape-rendering: crispEdges;
+    stroke-opacity: .2;
+    }
+
+    .line{
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2;
+    }
+</textarea>
+<br />
+<button id="rescale" onclick="rescale()">rescale</button>
+
+<div id="axis2"></div>
+<div id="axis1"></div>
+
+<!-- axis 1 -->
+<script>
+    // svg 高度
+    var height = 800,
+        // svg 宽度
+        width = 500,
+        // 绘制的图形 距离 svg 左右边距
+        margin = 25,
+        // 绘制的图形 距离 svg 顶端的 高度
+        offset = 50,
+        // 计算出 坐标轴的宽度
+        axisWidth = width - 2 * margin;
+
+    var scaleLinear = d3.scaleLinear()
+        .domain([0, 1000])
+        .range([0, axisWidth]);
+
+    var svg = d3.select("div#axis1").append("svg")
+    .attr("class", "axis")
+    .attr("width", width)
+    .attr("height", height);
+
+    // 注意这里的刻度  D3 会自动处理刻度。 目前调试的情况来看，能除尽的情况下，保证不出小数
+    d3.axisBottom(scaleLinear).ticks(6)
+    (
+        svg.append("g")
+            .attr("transform", function () {
+                return "translate(" + margin + "," + 1 * offset + ")rotate(5)"; // rotate 旋转角度
+            })
+        );
+    d3.axisBottom(scaleLinear)
+        .ticks(8)
+        // 标签数字 与 坐标轴的距离
+        .tickPadding(10)
+        // format 函数 w
+        .tickFormat(function (v) {
+            return v + "%(这是自定义的)";
+        })
+        (
+            svg.append("g")
+                .attr("transform", function () {
+                    return "translate(" + margin + "," + 5 * offset + ")";
+                })
+            );
+    d3.axisBottom(
+            d3.scaleTime()
+            .domain([new Date(2015, 0, 1), Date.now()])
+            .range([0, axisWidth])
+        )
+        .ticks(15)
+        // 刻度的格式化
+        .tickFormat(d3.timeFormat("%x"))
+            (
+                svg.append("g")
+                    .attr("transform", function () {
+                        return "translate(" + margin + "," + 8 * offset + ")";
+                    })
+                );
+
+    // 获取到 所有的文本，旋转 30 度的角度
+    d3.selectAll("g.tick text").attr('transform', 'translate(5,5)rotate(30)');
+
+</script>
+
+<!-- axis 2 -->
+<script>
+    var width = 800,
+        height = 500,
+        margin = 25,
+        xAxisWidth = width - 2 * margin,
+        yAxisHeight = height - 2 * margin,
+        xAxis;
+
+    var svg = d3.select("div#axis2")
+        .append("svg")
+        .attr("class", "axis")
+        .attr("width", width)
+        .attr("height", height);
+
+    function renderXAxis() {
+        var axisLength = width - 2 * margin;
+
+        var scale = d3.scaleLinear()
+                        .domain([0, 100])
+                        .range([0, xAxisWidth]);
+
+        xAxis = d3.axisBottom()
+                .scale(scale);
+
+        svg.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", function () { // <-A
+                return "translate(" + margin + "," + (height - margin) + ")";
+            })
+            .call(xAxis);
+
+        d3.selectAll("g.x-axis g.tick")
+             .append("line")
+                 .classed("grid-line", true)
+                 .attr("x1", 0)
+                 .attr("y1", 0)
+                 .attr("x2", 0)
+                 .attr("y2", function (d) {
+                     return -d;
+                 });
+    }
+    function renderYAxis() {
+        var scale = d3.scaleLinear()
+        .domain([100, 0])
+        .range([0, yAxisHeight]);
+
+        var axis = d3.axisLeft(scale);
+
+        svg.append("g")
+        .attr("class", "y-axis")
+        .attr("transform", function () {
+            return "translate(" + margin + "," + margin + ")";
+        })
+        .call(axis);
+
+        d3.selectAll("g.y-axis g.tick")
+        .append("line")
+        .classed("grid-line", true)
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", xAxisWidth)
+        .attr("y2", 0);
+    }
+
+    renderXAxis();
+    renderYAxis();
+
+    function rescale() {
+        var max = Math.round(Math.random() * 100);
+
+        d3.select("button#rescale").text(max);
+
+        xAxis
+            .scale()
+        .domain([0, max]);
+
+        //var axis = d3.axisBottom(
+        //    d3.scaleLinear().domain([0, max])
+        //    .range([0, xAxisWidth])
+        //    );
+
+        svg.select("g.x-axis")
+        // 调用一下变换即可
+        .transition()
+        .call(xAxis);
+
+        var ticks = d3.selectAll("g.x-axis g.tick");
+        ticks
+        .selectAll("line.grid-line")
+        .remove();
+        ticks.append("line")
+        .classed("grid-line", true)
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", 0)
+        .attr("y2", -(height - 2 * margin));
+    }
+</script>
